@@ -21,3 +21,6 @@ Route::get("questions/actives", "QuestionsController@actives");
 Route::apiResource("questions", "QuestionsController");
 
 Route::apiResource("users", "UsersController");
+
+Route::get("tests/createTest", "TestsController@createTest");
+Route::apiResource("tests", "TestsController");
