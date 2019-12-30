@@ -23,4 +23,6 @@ Route::apiResource("questions", "QuestionsController");
 Route::apiResource("users", "UsersController");
 
 Route::get("tests/createTest", "TestsController@createTest");
+Route::get("tests/correctAnswer/{idQuestion}", "TestsController@correctAnswer");
+Route::get("tests/ranking", "TestsController@ranking");
 Route::apiResource("tests", "TestsController");
