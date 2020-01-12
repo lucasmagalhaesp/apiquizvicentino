@@ -16,7 +16,7 @@ class UsersController extends Controller
 
     public function index()
     {
-        return response()->json(["users" => $this->model->all()]);   
+        return response()->json(["success" => true, "data" => $this->model->all()]);   
     }
 
     public function create()
@@ -31,7 +31,7 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        return response()->json(["users" => $this->model->find($id)]);
+        return response()->json(["success" => true, "data" => $this->model->find($id)]);
     }
 
     public function edit($id)

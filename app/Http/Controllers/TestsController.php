@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use App\Models\Test;
 use App\Models\Question;
 use App\User;
@@ -20,7 +21,7 @@ class TestsController extends Controller
 
     public function index()
     {
-        return response()->json(["dados" => $this->model->all()]);
+        return response()->json(["success" => true, "data" => $this->model->all()]);
     }
 
     public function create()
@@ -60,15 +61,17 @@ class TestsController extends Controller
         $questions = [];
 
         foreach($idActiveQuestions as $id){
+            $idQuestion = $activesQuestions[$id]->id;
             $question = $activesQuestions[$id]->description;
             $answers = $activesQuestions[$id]->answers->map(function ($a){
-                return $a->description;
+                return ["id" => $a->id, "description" => $a->description];
             });
 
-            $questions[] = ["question" => $question, "answers" => $answers];
+            $questions[] = ["question" =>   ["id" => $idQuestion, "description" => $question], 
+                            "answers" => $answers];
         }
 
-        return response()->json(["questions" => $questions]);
+        return response()->json(["success" => true, "data" => $questions]);
     }
 
     private function chooseQuestions()
@@ -78,7 +81,7 @@ class TestsController extends Controller
     	$count = Question::where("active", "S")->count();
  
     	while($cont < $this->numQuestions){
-            $num = rand(1,$count);
+            $num = rand(0,$count - 1);
             if(!in_array($num, $chosenNumbers)){
                 $chosenNumbers[$cont] = $num;
                 $cont++;
@@ -88,12 +91,41 @@ class TestsController extends Controller
     	return $chosenNumbers;
     }
 
+    public function selectTestQuestion(Request $request){
+        $idQuestions = $request->idQuestions;
+        
+        $activesQuestions = Question::where("active", "S")->get();
+        $count = Question::where("active", "S")->count();
+
+        $allowedId = false;
+        $num = -1;
+        while($allowedId == false){
+            $num = rand(0, $count - 1);
+            if(!in_array($num, $idQuestions)){
+                $allowedId = true;
+            }
+        }
+
+        $idQuestion = $activesQuestions[$num]->id;
+        $question = $activesQuestions[$num]->description;
+        $answers = $activesQuestions[$num]->answers->map(function ($a){
+            return ["id" => $a->id, "description" => $a->description];
+        });
+
+        $question = [   
+                        "question" => [ "id" => $idQuestion, "description" => $question ], 
+                        "answers" => $answers
+                    ];
+        
+        return response()->json(["success" => true, "data" => $question, "indexQuestion" => $num]);
+    }
+
     public function correctAnswer(Request $request)
     {
         $idQuestion = $request->idQuestion;
         $idCorrectAnswer = DB::table("correct_answers")->select("answer_id")->where("question_id", $idQuestion)->first()->answer_id;
         
-        return response()->json(["idCorrectAnswer" => $idCorrectAnswer]);
+        return response()->json(["success" => true, "idCorrectAnswer" => $idCorrectAnswer]);
     }
 
     public function result()
@@ -131,11 +163,13 @@ class TestsController extends Controller
 
     public function ranking()
     {
+        //pega o id de cada usuário
         $users = User::select("id")->orderBy("id")->get();
         $idUsers = $users->map(function ($user){
             return $user->id;
         });
 
+        //pega o melhor teste de cada usuário
         $ranking = [];
         foreach($idUsers as $id){
             $userTests = $this->model->where("user_id", $id)->orderBy("points", "desc")->orderBy("time")->first();
@@ -149,11 +183,22 @@ class TestsController extends Controller
             }
         }
 
-        dd($ranking);
+        //ordena os testes de acordo com a maior pontuação e o menor tempo
+        usort($ranking, function ($a, $b){
+            if ($a["points"] == $b["points"]){
+                return $a["time"] > $b["time"];
+            }
+            return $a["points"] < $b["points"];
+        });
 
-        exit;
+        return response()->json(["success" => true, "data" => $ranking]);
+    }
+
+    public function allUserTests(Request $request)
+    {
+        $userId = $request->userId;
+        $tests = User::find($userId)->tests;
         
-        $ranking = $this->model->groupBy("user_id")->get();
-        dd($users);
+        return response()->json(["success" => true, "data" => $tests]);
     }
 }

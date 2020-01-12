@@ -16,12 +16,12 @@ class QuestionsController extends Controller
     
     public function index()
     {
-        return response()->json(["dados" => $this->model->all()]);
+        return response()->json(["success" => true, "data" => $this->model->all()]);
     }
 
     public function actives()
     {
-        return response()->json(["dados" => $this->model->where("active", "S")->get()]);
+        return response()->json(["success" => true, "data" => $this->model->where("active", "S")->get()]);
     }
     
     public function create()
@@ -38,7 +38,7 @@ class QuestionsController extends Controller
     {
         $question = $this->model->find($id)->description;
         $answers = $this->model->find($id)->answers;
-        return response()->json(["question" => $question, "answers" => $answers]);
+        return response()->json(["success" => true, "data" => ["question" => $question, "answers" => $answers]]);
     }
 
     public function edit($id)
