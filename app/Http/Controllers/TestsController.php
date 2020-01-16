@@ -31,7 +31,17 @@ class TestsController extends Controller
 
     public function store(Request $request)
     {
-        //
+        $this->model->user_id = $request->userID;
+        $this->model->time = $request->time;
+        $this->model->points = $request->hits;
+        
+        try{
+            $this->model->save();
+        }catch(\Exception $exception){
+            return response()->json(["success" => false, "msg" => "Erro ao salvar teste: ".$exception->getMessage()]);
+        }
+
+        return response()->json(["success" => true, "data" => $this->model]);
     }
 
     public function show($id)
