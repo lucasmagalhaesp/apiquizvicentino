@@ -24,6 +24,7 @@ Route::apiResource("users", "UsersController");
 
 Route::post("tests/selectTestQuestion", "TestsController@selectTestQuestion");
 Route::get("tests/correctAnswer/{idQuestion}", "TestsController@correctAnswer");
-Route::get("tests/ranking", "TestsController@ranking");
+Route::get("tests/resultText/{numHits}", "TestsController@resultText");
+Route::get("ranking", "TestsController@ranking");
 Route::get("tests/allUserTests/{userId}", "TestsController@allUserTests");
 Route::apiResource("tests", "TestsController");

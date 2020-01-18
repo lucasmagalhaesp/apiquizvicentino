@@ -21,7 +21,7 @@ class TestsController extends Controller
 
     public function index()
     {
-        return response()->json(["success" => true, "data" => $this->model->all()]);
+        return response()->json(["success" => true, "tests" => $this->model->orderBy("id")->get()]);
     }
 
     public function create()
@@ -143,9 +143,9 @@ class TestsController extends Controller
 
     }
 
-    private function resultText($numHits)
+    public function resultText(Request $request)
     {
-        switch($numHits){
+        switch($request->numHits){
             case 0:
                 $resultText = "<strong>Infelizmente você não acertou nenhuma pergunta!!!</strong><br /> Faça um novo teste e melhore seu resultado.";
                 break;
@@ -168,24 +168,28 @@ class TestsController extends Controller
                 $resultText = "Erro ao retornar o resultado!";
         }
         
-        return $resultText;
+        return response()->json(["success" => true, "data" => $resultText]);
     }
 
     public function ranking()
     {
         //pega o id de cada usuário
-        $users = User::select("id")->orderBy("id")->get();
-        $idUsers = $users->map(function ($user){
+        $users = User::select("id", "name", "email", "city", "state")->orderBy("id")->get();
+        /* $idUsers = $users->map(function ($user){
             return $user->id;
         });
 
+        dd($idUsers); */
         //pega o melhor teste de cada usuário
         $ranking = [];
-        foreach($idUsers as $id){
-            $userTests = $this->model->where("user_id", $id)->orderBy("points", "desc")->orderBy("time")->first();
+        foreach($users as $user){
+            $userTests = $this->model->where("user_id", $user->id)->orderBy("points", "desc")->orderBy("time")->first();
             if (!is_null($userTests)){
                 $ranking[] = [
                     "id" => $userTests->user_id,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "city" => $user->city."/".$user->state,
                     "points" => $userTests->points,
                     "time" => $userTests->time,
                     "created_at" => $userTests->created_at
@@ -201,7 +205,7 @@ class TestsController extends Controller
             return $a["points"] < $b["points"];
         });
 
-        return response()->json(["success" => true, "data" => $ranking]);
+        return response()->json(["success" => true, "ranking" => $ranking]);
     }
 
     public function allUserTests(Request $request)
