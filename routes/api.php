@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 Route::get("questions/actives", "QuestionsController@actives");
 Route::apiResource("questions", "QuestionsController");
 
+Route::post("users/login", "UsersController@login");
 Route::apiResource("users", "UsersController");
 
 Route::post("tests/selectTestQuestion", "TestsController@selectTestQuestion");
@@ -28,3 +29,10 @@ Route::get("tests/resultText/{numHits}", "TestsController@resultText");
 Route::get("ranking", "TestsController@ranking");
 Route::get("tests/allUserTests/{userId}", "TestsController@allUserTests");
 Route::apiResource("tests", "TestsController");
+
+Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+});
