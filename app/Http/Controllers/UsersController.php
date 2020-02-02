@@ -19,7 +19,7 @@ class UsersController extends Controller
 
     public function index()
     {
-        return response()->json(["success" => true, "data" => $this->model->all()]);   
+        return response()->json(["success" => true, "users" => $this->model->all()]);   
     }
 
     public function create()

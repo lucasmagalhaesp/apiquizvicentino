@@ -16,9 +16,8 @@ class AuthController extends Controller
     {
         $credentials = ['email' => $request->dados['email'], 'password' => $request->dados['password']];
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        if (!$token = auth()->attempt($credentials))
+            return response()->json(['errors' => 'Unauthorized'], 401);
 
         return $this->respondWithToken($token);
     }
@@ -70,5 +69,15 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\Guard
+     */
+    public function guard()
+    {
+        return Auth::guard();
     }
 }
