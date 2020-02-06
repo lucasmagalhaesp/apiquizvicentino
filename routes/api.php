@@ -17,7 +17,10 @@ use Illuminate\Http\Request;
     return $request->user();
 }); */
 
+//Route::delete("questions/{id}", "QuestionsController@destroy");
+
 Route::get("questions/actives", "QuestionsController@actives");
+Route::get("questions/{id}/edit", "QuestionsController@edit");
 Route::apiResource("questions", "QuestionsController");
 
 //Route::post("users/login", "UsersController@login");
