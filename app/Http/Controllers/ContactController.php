@@ -9,7 +9,7 @@ use Mail;
 class ContactController extends Controller
 {
     public function send(ContactRequest $request){
-        $send = Mail::send("contact.email", [ "data" => $request->dados ], function ($message) {
+        Mail::send("contact.email", [ "data" => $request->dados ], function ($message) {
             $message->from("contato@quizvicentino.com.br")
                     ->to("contato@quizvicentino.com.br", "Quiz Vicentino")
                     ->subject("Contato do site");

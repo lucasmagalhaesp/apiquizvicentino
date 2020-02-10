@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\UsersLoginRequest;
+use App\User;
+use Mail;
+use Hash;
 
 class AuthController extends Controller
 {
@@ -79,5 +82,62 @@ class AuthController extends Controller
     public function guard()
     {
         return Auth::guard();
+    }
+
+
+    public function forgotPassword(Request $request)
+    {
+        $email = $request->email;
+        $changeUsername = $request->changeUsername;
+        $oldUsername = $request->oldUsername;
+        $token = Hash::make($email);
+
+        if ($changeUsername){
+            $userData = User::where("email", $oldUsername)->first();
+            $updateUser = User::where("email", $oldUsername)->update(["email" => $email, "remember_token" => $token]);
+            if ($updateUser){
+                Mail::send("forgotPassword.email", [ "data" => $userData, "token" => $token ], function ($message) use ($email) {
+                    $message->from("contato@quizvicentino.com.br")
+                            ->to($email, "Quiz Vicentino")
+                            ->subject("Recuperar senha - Quiz Vicentino");
+                });
+
+                return response()->json(["success" => true]);
+            }
+        }else{
+            $userData = User::where("email", $email)->first();
+            if (!is_null($userData)){
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+                    return response()->json(["success" => true, "changeUsername" => true]);
+                }else{
+                    $updateTokenUser = User::where("email", $email)->update(["remember_token" => $token]);
+                    if ($updateTokenUser){
+                        Mail::send("forgotPassword.email", [ "data" => $userData, "token" => $token ], function ($message) use ($email) {
+                            $message->from("contato@quizvicentino.com.br")
+                                    ->to($email, "Quiz Vicentino")
+                                    ->subject("Recuperar senha - Quiz Vicentino");
+                        });
+                    
+                        return response()->json(["success" => true]);
+                    }
+                }
+            }else{
+                return response()->json(["success" => false, "msg" => "Usuário não encontrado"]);
+            }
+        }
+
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $newPassword = $request->password;
+        $token = $request->token;
+
+        $updatePassword = User::where("remember_token", $token)->update(["password", $newPassword]);
+
+        if ($updatePassword)
+            return response()->json(["success" => falses]);
+
+        return response()->json(["success" => true]);
     }
 }
