@@ -24,6 +24,12 @@ class TestsController extends Controller
         return response()->json(["success" => true, "tests" => $this->model->orderBy("id")->get()]);
     }
 
+    public function myTests()
+    {
+        $tests = $this->model->where("user_id", auth()->user()->id)->orderBy("id", "desc")->get();
+        return response()->json(["success" => true, "tests" => $tests]);
+    }
+    
     public function create()
     {
         //
@@ -31,7 +37,7 @@ class TestsController extends Controller
 
     public function store(Request $request)
     {
-        $this->model->user_id = $request->userID;
+        $this->model->user_id = auth()->user()->id;
         $this->model->time = $request->time;
         $this->model->points = $request->hits;
         

@@ -33,6 +33,7 @@ Route::group(["middleware" => "api"], function () {
     Route::get("tests/resultText/{numHits}", "TestsController@resultText");
     Route::get("ranking", "TestsController@ranking");
     Route::get("tests/allUserTests/{userId}", "TestsController@allUserTests");
+    Route::get("tests/myTests", "TestsController@myTests");
     Route::apiResource("tests", "TestsController"); 
 });
 

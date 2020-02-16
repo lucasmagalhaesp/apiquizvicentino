@@ -90,7 +90,7 @@ class AuthController extends Controller
         $email = $request->email;
         $changeUsername = $request->changeUsername;
         $oldUsername = $request->oldUsername;
-        $token = Hash::make($email);
+        $token = str_replace(["/", "&"], "0", Hash::make($email));
 
         if ($changeUsername){
             $userData = User::where("email", $oldUsername)->first();
@@ -129,14 +129,10 @@ class AuthController extends Controller
     }
 
     public function resetPassword(Request $request)
-    {
+    {        
         $newPassword = $request->password;
         $token = $request->token;
-
-        $updatePassword = User::where("remember_token", $token)->update(["password", $newPassword]);
-
-        if ($updatePassword)
-            return response()->json(["success" => falses]);
+        User::where("remember_token", $token)->update(["password" => Hash::make($newPassword)]);
 
         return response()->json(["success" => true]);
     }
