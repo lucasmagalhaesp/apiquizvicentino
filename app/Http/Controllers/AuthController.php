@@ -22,7 +22,18 @@ class AuthController extends Controller
         if (!$token = auth()->attempt($credentials))
             return response()->json(['errors' => 'Unauthorized'], 401);
 
-        return $this->respondWithToken($token);
+        //verificando se o usuário é administrador
+        $userData = User::select("admin", "name")->where("email", $request->dados['email'])->first();
+
+        return response()->json([
+            'success'       => true,
+            'access_token'  => $token,
+            'isAdmin'       => $userData->admin,
+            'name'          => $userData->name,
+            'token_type'    => 'bearer',
+            'expires_in'    => auth()->factory()->getTTL() * 60
+        ]);
+        //return $this->respondWithToken($token, $isAdmin);
     }
 
     /**
@@ -44,7 +55,7 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(["success" => true]);
     }
 
     /**
@@ -67,10 +78,10 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
         return response()->json([
-            'success' => true,
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'success'       => true,
+            'access_token'  => $token,
+            'token_type'    => 'bearer',
+            'expires_in'    => auth()->factory()->getTTL() * 60
         ]);
     }
 
