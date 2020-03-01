@@ -21,7 +21,7 @@ class TestsController extends Controller
 
     public function index()
     {
-        return response()->json(["success" => true, "tests" => $this->model->orderBy("id")->get()]);
+        return response()->json(["success" => true, "tests" => $this->model->orderBy("id")->with("user")->orderBy("id", "desc")->get()]);
     }
 
     public function myTests()
