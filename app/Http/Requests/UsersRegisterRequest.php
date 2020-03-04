@@ -28,7 +28,7 @@ class UsersRegisterRequest extends FormRequest
             "dados.email"           => "required|email",
             "dados.password"        => "required|min:6",
             "dados.state"           => "required|size:2",
-            "dados.city"            => "required",
+            "dados.city"            => "required|not_in:Selecione sua cidade",
             "dados.confirmPassword" => "required|same:dados.password"
         ];
     }
@@ -44,6 +44,7 @@ class UsersRegisterRequest extends FormRequest
             "dados.state.required"           => "Informe a UF",
             "dados.state.size"               => "UF inválida",
             "dados.city.required"            => "Informe sua cidade",
+            "dados.city.not_in"              => "Informe sua cidade",
             "dados.confirmPassword.required" => "Confirme sua senha",
             "dados.confirmPassword.same"     => "Senhas não coincidem",
         ];
