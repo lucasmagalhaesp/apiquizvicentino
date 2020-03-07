@@ -23,15 +23,16 @@ class AuthController extends Controller
             return response()->json(['errors' => 'Unauthorized'], 401);
 
         //verificando se o usuário é administrador
-        $userData = User::select("admin", "name")->where("email", $request->dados['email'])->first();
+        $userData = User::select("admin", "name", "email")->where("email", $request->dados['email'])->first();
 
         return response()->json([
             'success'       => true,
             'access_token'  => $token,
             'isAdmin'       => $userData->admin,
             'name'          => $userData->name,
+            'email'         => $userData->email,
             'token_type'    => 'bearer',
-            'expires_in'    => auth()->factory()->getTTL() * 60
+            'expires_in'    => auth()->factory()->getTTL() * 360
         ]);
         //return $this->respondWithToken($token, $isAdmin);
     }
