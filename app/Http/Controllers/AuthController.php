@@ -102,13 +102,14 @@ class AuthController extends Controller
         $email = $request->email;
         $changeUsername = $request->changeUsername;
         $oldUsername = $request->oldUsername;
-        $token = str_replace(["/", "&"], "0", Hash::make($email));
+        $numRand = rand(1000, 9999);
+        $token = Hash::make($numRand);
 
         if ($changeUsername){
             $userData = User::where("email", $oldUsername)->first();
             $updateUser = User::where("email", $oldUsername)->update(["email" => $email, "remember_token" => $token]);
             if ($updateUser){
-                Mail::send("forgotPassword.email", [ "data" => $userData, "token" => $token ], function ($message) use ($email) {
+                Mail::send("forgotPassword.email", [ "data" => $userData, "cod" => $numRand ], function ($message) use ($email) {
                     $message->from("contato@quizvicentino.com.br")
                             ->to($email, "Quiz Vicentino")
                             ->subject("Recuperar senha - Quiz Vicentino");
@@ -124,7 +125,7 @@ class AuthController extends Controller
                 }else{
                     $updateTokenUser = User::where("email", $email)->update(["remember_token" => $token]);
                     if ($updateTokenUser){
-                        Mail::send("forgotPassword.email", [ "data" => $userData, "token" => $token ], function ($message) use ($email) {
+                        Mail::send("forgotPassword.email", [ "data" => $userData, "cod" => $numRand ], function ($message) use ($email) {
                             $message->from("contato@quizvicentino.com.br")
                                     ->to($email, "Quiz Vicentino")
                                     ->subject("Recuperar senha - Quiz Vicentino");
@@ -140,11 +141,26 @@ class AuthController extends Controller
 
     }
 
+    public function checkSecurityCode(Request $request)
+    {
+        $securityCode = strval($request->securityCode);
+        $email = $request->email;
+        
+        if ($securityCode == 0)
+        return response()->json(["success" => false, "msg" => "Erro ao validar o código de segurança"]);
+        
+        $rememberToken = User::select("remember_token")->where("email", $email)->first()->remember_token;
+        if (!Hash::check($securityCode, $rememberToken))
+            return response()->json(["success" => false, "msg" => "Código de segurança inválido"]);
+
+        return response()->json(["success" => true]);
+    }
+
     public function resetPassword(Request $request)
     {        
         $newPassword = $request->password;
-        $token = $request->token;
-        User::where("remember_token", $token)->update(["password" => Hash::make($newPassword)]);
+        $email = $request->email;
+        User::where("email", $email)->update(["password" => Hash::make($newPassword)]);
 
         return response()->json(["success" => true]);
     }

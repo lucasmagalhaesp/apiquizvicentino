@@ -25,7 +25,7 @@ class UsersRegisterRequest extends FormRequest
     {
         return [
             "dados.name"            => "required",
-            "dados.email"           => "required|email",
+            "dados.email"           => "required|email|unique:users,email",
             "dados.password"        => "required|min:6",
             "dados.state"           => "required|size:2",
             "dados.city"            => "required|not_in:Selecione sua cidade",
@@ -39,6 +39,7 @@ class UsersRegisterRequest extends FormRequest
             "dados.name.required"            => "Informe o seu nome",
             "dados.email.required"           => "Informe seu e-mail",
             "dados.email.email"              => "E-mail inválido",
+            "dados.email.unique"             => "E-mail já cadastrado. Utilize outro para realizar um novo cadastro ou recupere sua senha para utilizar esse mesmo e-mail",
             "dados.password.required"        => "Crie uma senha",
             "dados.password.min"             => "Sua senha deve ter no mínimo 6 caracteres",
             "dados.state.required"           => "Informe a UF",

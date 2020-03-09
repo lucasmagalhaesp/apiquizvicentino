@@ -45,6 +45,7 @@ Route::group(["middleware" => "api","prefix" => "auth"], function ($router) {
 
     Route::post("forgotPassword", "AuthController@forgotPassword");
     Route::post("resetPassword", "AuthController@resetPassword");
+    Route::post("checkSecurityCode", "AuthController@checkSecurityCode");
 });
 
 Route::post("contact/send", "ContactController@send");
