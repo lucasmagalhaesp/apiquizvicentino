@@ -1,4 +1,4 @@
-# API Quiz Vicentino (apitquizvicentino)
+# API Quiz Vicentino (apiquizvicentino)
 
 ## O que é o Quiz Vicentino?
 
