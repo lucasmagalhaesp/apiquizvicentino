@@ -32,7 +32,7 @@ class QuestionsController extends Controller
         $data = $request->dados;
         $this->model->description = $data["description"];
         $this->model->active = $data["active"] ? "S" : "N";
-        $this->model->expiration_date = $data["expiration_date"];
+        if (!is_null($data["expiration_date"])) $this->model->expiration_date = $data["expiration_date"];
 
         try{
             $this->model->save();
@@ -92,7 +92,7 @@ class QuestionsController extends Controller
         $this->model = $this->model->find($id);
         $this->model->description = $data["description"];
         $this->model->active = $data["active"] ? "S" : "N";
-        $this->model->expiration_date = $data["expiration_date"];
+        if (!is_null($data["expiration_date"])) $this->model->expiration_date = $data["expiration_date"];
 
         try{
             $this->model->save();
