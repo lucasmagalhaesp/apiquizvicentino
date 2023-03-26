@@ -16,6 +16,16 @@ Esse projeto é uma API desenvolvida com o Laravel Framework (versão 9), servin
 composer install
 ```
 
+## Configurações
+```bash
+Configure seu banco dados e e-mail no arquivo .env
+```
+
+## Execute suas migrations
+```bash
+php artisan migrate
+```
+
 ### Inicie a aplicação em ambiente de desenvolvimento
 ```bash
 php artisan serve
