@@ -26,7 +26,12 @@ Configure seu banco dados e e-mail no arquivo .env
 php artisan migrate
 ```
 
-### Inicie a aplicação em ambiente de desenvolvimento
+## Insira um usuário inicial no banco de dados (e-mail: admin@quizvicentino.com.br, senha: 123456)
+```bash
+php artisan db:seed
+```
+
+## Inicie a aplicação em ambiente de desenvolvimento
 ```bash
 php artisan serve
 ```
